@@ -58,7 +58,13 @@ class MitsubaRenderEngine(bpy.types.RenderEngine):
                 buf_name = result[0].replace("<root>", "Main")
                 channel_count = result[1].channel_count() if result[1].channel_count() != 2 else 3
 
-                self.add_pass(buf_name, channel_count, ''.join([f.name.split('.')[-1] for f in result[1].struct_()]))
+                # extract name
+                res_struct = result[1].struct_()
+                result_name = ""
+                for ii in range(len(res_struct)):
+                    curr_struct_seg = res_struct[ii]
+                    result_name += curr_struct_seg.name.split('.')[-1]
+                self.add_pass(buf_name, channel_count, result_name)
 
             blender_result = self.begin_result(0, 0, self.size_x, self.size_y)
 
