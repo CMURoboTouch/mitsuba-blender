@@ -19,28 +19,45 @@ from bpy.utils import register_class, unregister_class
 import os
 import sys
 import subprocess
+import traceback
 
 from . import io, engine
+
+from ipdb import set_trace
 
 def get_addon_preferences(context):
     return context.preferences.addons[__name__].preferences
 
 def init_mitsuba(context):
+    print("init mitsuba")
     # Make sure we can load mitsuba from blender
     try:
+        # set_trace()
         should_reload_mitsuba = 'mitsuba' in sys.modules
+        print(f"trying to import mitsuba. reload? {should_reload_mitsuba}")
+        # set_trace()
         import mitsuba
+        print(f"first import done. reload? {should_reload_mitsuba}")
         # If mitsuba was already loaded and we change the path, we need to reload it, since the import above will be ignored
         if should_reload_mitsuba:
             import importlib
             importlib.reload(mitsuba)
         mitsuba.set_variant('scalar_rgb')
         # Set the global threading environment
+        print("Setting thread_env")
         from mitsuba import ThreadEnvironment
-        bpy.types.Scene.thread_env = ThreadEnvironment()
+        thread_env = ThreadEnvironment()
+        bpy.types.Scene.thread_env = thread_env
+        # bpy.types.Scene.thread_env = ThreadEnvironment()
+        print("exit thread_env setter")
         return True
     except ModuleNotFoundError:
-        return False
+        pass
+    except Exception:
+        print('Failed to initialize mitsuba-blender add-on with exception:')
+        traceback.print_exc()
+    return False
+    print("Exit init_mitsuba")
 
 def try_register_mitsuba(context):
     prefs = get_addon_preferences(context)
@@ -81,16 +98,21 @@ def try_unregister_mitsuba():
     '''
     try:
         io.unregister()
+        print("unregister io done")
         engine.unregister()
+        print("engine io done")
         return True
     except RuntimeError:
         return False
 
 def try_reload_mitsuba(context):
+    print("HOT reload")
     try_unregister_mitsuba()
+    print("unregister done")
     if try_register_mitsuba(context):
         # Save user preferences
         bpy.ops.wm.save_userpref()
+    print("DONE hot reload")
 
 def ensure_pip():
     result = subprocess.run([sys.executable, '-m', 'ensurepip'], capture_output=True)
@@ -127,6 +149,7 @@ def update_additional_custom_paths(self, context):
             # NOTE: We insert in the first position here, so that the custom path
             #       supersede the pip version
             sys.path.insert(0, self.additional_python_path)
+    print("exit update_additional_custom_paths")
 
 class MITSUBA_OT_install_pip_dependencies(Operator):
     bl_idname = 'mitsuba.install_pip_dependencies'
@@ -159,6 +182,7 @@ def update_using_mitsuba_custom_path(self, context):
         update_mitsuba_custom_path(self, context)
     else:
         clean_additional_custom_paths(self, context)
+    print("exit update_using_mitsuba_custom_path")
 
 def update_mitsuba_custom_path(self, context):
     print("update_mitsuba_custom_path")
@@ -168,6 +192,8 @@ def update_mitsuba_custom_path(self, context):
         update_additional_custom_paths(self, context)
         if not self.is_mitsuba_initialized:
             try_reload_mitsuba(context)
+
+    print("exit update_mitsuba_custom_path")
 
 class MitsubaPreferences(AddonPreferences):
     bl_idname = __name__
@@ -228,7 +254,7 @@ class MitsubaPreferences(AddonPreferences):
             self.mitsuba_dependencies_status_message = 'A restart is required to apply the changes.'
             row.alert = True
             icon = 'ERROR'
-        elif self.has_pip_package or self.has_valid_mitsuba_custom_path:
+        elif self.has_pip_package or self.has_valid_mitsuba_custom_path and self.is_mitsuba_initialized:
             icon = 'CHECKMARK'
         else:
             icon = 'CANCEL'
