@@ -256,7 +256,7 @@ def write_mi_rgb_property(mi_context, mi_mat, mi_prop_name, bl_mat_wrap, out_soc
             write_mi_rgb_texture(mi_context, mi_texture, bl_mat_wrap, out_socket_id, default)
         elif mi_prop_type == Properties.Type.Object:
             print(mi_prop_name)
-            set_trace()
+            # set_trace()
             mi_obj = mi_mat.get(mi_prop_name)
             
             write_mi_rgb_spectrum(mi_context, mi_obj, bl_mat_wrap, out_socket_id, default)

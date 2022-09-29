@@ -41,18 +41,21 @@ class MitsubaRenderEngine(bpy.types.RenderEngine):
             self.size_y = int(b_scene.render.resolution_y * scale)
 
             # Temporary workaround as long as the dict creation writes stuff to dict
-            with tempfile.TemporaryDirectory() as dummy_dir:
-                filepath = os.path.join(dummy_dir, "scene.xml")
-                self.converter.set_path(filepath)
-                self.converter.scene_to_dict(depsgraph)
-                global curr_thread
-                curr_thread = Thread.thread()
-                curr_thread.file_resolver().prepend(dummy_dir)
-                mts_scene = self.converter.dict_to_scene()
+            # with tempfile.TemporaryDirectory() as dummy_dir:
+            dummy_dir = "/home/arpit/Downloads/blender_tmp_dir/"
+            filepath = os.path.join(dummy_dir, "scene.xml")
+            self.converter.set_path(filepath)
+            self.converter.scene_to_dict(depsgraph)
+            global curr_thread
+            curr_thread = Thread.thread()
+            curr_thread.file_resolver().prepend(dummy_dir)
+            mts_scene = self.converter.dict_to_scene()
 
             sensor = mts_scene.sensors()[0]
             mts_scene.integrator().render(mts_scene, sensor)
             render_results = sensor.film().bitmap().split()
+            bmp = sensor.film().bitmap()
+            bmp.write(os.path.join(dummy_dir, "myimg.exr"))
 
             for result in render_results:
                 buf_name = result[0].replace("<root>", "Main")
