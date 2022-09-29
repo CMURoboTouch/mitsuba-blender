@@ -45,6 +45,7 @@ class MitsubaRenderEngine(bpy.types.RenderEngine):
                 filepath = os.path.join(dummy_dir, "scene.xml")
                 self.converter.set_path(filepath)
                 self.converter.scene_to_dict(depsgraph)
+                global curr_thread
                 curr_thread = Thread.thread()
                 curr_thread.file_resolver().prepend(dummy_dir)
                 mts_scene = self.converter.dict_to_scene()
