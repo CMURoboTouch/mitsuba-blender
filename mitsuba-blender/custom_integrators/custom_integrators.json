@@ -7,6 +7,12 @@
         "label" : "Primary Sample Space MLT",
         "description" : "Primary Sample Space Metropolis Light Transport",
         "parameters" : {
+            "bidirectional" : {
+                "label" : "bidirectional",
+                "description" : "PSSMLT works in conjunction with another rendering tech- nique that is endowed with Markov Chain-based sample generation. ",
+                "type" : "boolean",
+                "default" : false
+            },
             "max_depth" : {
                 "label" : "Max. Depth",
                 "description" : "Longest path depth.",
@@ -20,12 +26,6 @@
                 "type"  : "integer",
                 "default" : 5,
                 "min" : 0
-            },
-            "hide_emitters" : {
-                "label" : "Hide Emitters",
-                "description" : "Hide directly visible emitters.",
-                "type" : "boolean",
-                "default" : false
             }
         }
     }
