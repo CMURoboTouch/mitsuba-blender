@@ -21,7 +21,7 @@ with open(os.path.join(dirname(__file__), "samplers.json")) as file:
 with open(os.path.join(dirname(__file__), "rfilters.json")) as file:
     rfilter_data = json.load(file)
 
-with open(os.path.join(dirname(__file__), "custom_integrators", "custom_integrators.json")) as file:
+with open(os.path.join(dirname(__file__), "..", "custom_integrators", "custom_integrators.json")) as file:
     custom_integrator_data = json.load(file)
     integrator_data = {**integrator_data, **custom_integrator_data}
 

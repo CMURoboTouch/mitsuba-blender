@@ -34,7 +34,14 @@ def init_mitsuba(context):
         if should_reload_mitsuba:
             import importlib
             importlib.reload(mitsuba)
-        mitsuba.set_variant('scalar_rgb')
+
+        mitsuba.set_variant('scalar_rgb') # required for proper export
+        # mitsuba.set_variant("llvm_ad_rgb") # required for proper render
+        # TODO: check if the registration is per variant
+        # register
+        # print("Registering custom integrators")
+        from . import custom_integrators
+        custom_integrators.register()
         # Set the global threading environment
         from mitsuba import ThreadEnvironment
         bpy.types.Scene.thread_env = ThreadEnvironment()

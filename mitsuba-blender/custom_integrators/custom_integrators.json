@@ -1,0 +1,32 @@
+{
+  "mydirect" : {
+        "label" : "My Direct Illumination Integrator",
+        "description" : "Direct illumination integrator with multi-importance sampling."
+  },
+  "pssmlt" : {
+        "label" : "Primary Sample Space MLT",
+        "description" : "Primary Sample Space Metropolis Light Transport",
+        "parameters" : {
+            "max_depth" : {
+                "label" : "Max. Depth",
+                "description" : "Longest path depth.",
+                "type"  : "integer",
+                "default" : -1,
+                "min" : -1
+            },
+            "rr_depth" : {
+                "label" : "Russian Roulette Depth",
+                "description" : "Minimum path depth at which russian roulette is used.",
+                "type"  : "integer",
+                "default" : 5,
+                "min" : 0
+            },
+            "hide_emitters" : {
+                "label" : "Hide Emitters",
+                "description" : "Hide directly visible emitters.",
+                "type" : "boolean",
+                "default" : false
+            }
+        }
+    }
+}
