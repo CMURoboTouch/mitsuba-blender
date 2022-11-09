@@ -313,7 +313,7 @@ def convert_principled_materials_cycles(export_ctx, current_node):
 
 #TODO: Add more support for other materials: refraction, transparent, translucent
 cycles_converters = {
-    'BSDF_PRINCIPLED': convert_principled_materials_cycles,
+    # 'BSDF_PRINCIPLED': convert_principled_materials_cycles,
     "BSDF_DIFFUSE": convert_diffuse_materials_cycles,
     'BSDF_GLOSSY': convert_glossy_materials_cycles,
     'BSDF_GLASS': convert_glass_materials_cycles,

@@ -43,6 +43,19 @@ def convert(fname, mode="v1"):
     modified_str = camelize(f_str)
     root_n = ET.fromstring(modified_str)
 
+    element_to_del_list = []
+    for i, ele_n in enumerate(root_n.findall(".//*[@type='perspective']")):
+      
+      for child_ele_n in ele_n:
+        print(child_ele_n, child_ele_n.attrib)
+        if child_ele_n.tag == "float" and child_ele_n.attrib["name"] in ["principalPointOffsetX", "principalPointOffsetY"]:
+          print(child_ele_n, child_ele_n.attrib["name"])
+          # ele_n.remove(child_ele_n)
+          element_to_del_list.append(child_ele_n)
+
+      for child_ele_n in element_to_del_list:
+        ele_n.remove(child_ele_n)
+
     # ior
     for i, ele_n in enumerate(root_n.findall(".//*[@name='intIor']")):
       # print("Copying back %s"%ele_n)
