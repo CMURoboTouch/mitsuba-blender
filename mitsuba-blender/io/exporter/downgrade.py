@@ -3,8 +3,6 @@ import re
 import xml.etree.ElementTree as ET
 from inflection import camelize, underscore
 
-# from ipdb import set_trace
-
 def convert(fname, mode="v1"):
 
   dname = osp.dirname(fname)

@@ -9,6 +9,7 @@ if "bpy" in locals():
 
 import bpy
 from mathutils import Matrix, Vector
+from math import radians
 
 from . import bl_transform_utils
 from . import mi_spectra_utils
@@ -80,6 +81,27 @@ def mi_point_to_bl_light(mi_context, mi_emitter):
 
     return bl_light, world_matrix
 
+
+def mi_spot_to_bl_light(mi_context, mi_emitter):
+    bl_light = bpy.data.lights.new(name=mi_emitter.id(), type='SPOT')
+
+    color, strength = _get_radiance_value(mi_context, mi_emitter, 'intensity', [10/(math.pi*4)]*3)
+    bl_light.color = color
+    bl_light.energy = strength * math.pi * 4
+    bl_light.spot_size = mi_emitter.get("beam_width", 30)
+    bl_light.shadow_soft_size = 0.25 # arbitrary # is the radius param in GUI
+    cutOffAngle = mi_emitter.get("cutoff_angle", 50)
+    
+    if mi_emitter.has_property('to_world'):
+        world_matrix = mi_context.mi_space_to_bl_space(bl_transform_utils.mi_transform_to_bl_transform(mi_emitter.get('to_world', None)))
+    else:
+        world_matrix = Matrix.Translation(mi_context.mi_space_to_bl_space(Vector(mi_emitter.get('position', [0.0, 0.0, 0.0]))))
+
+    # need trafo 180 on x-axis
+    world_matrix = world_matrix @ Matrix.Rotation(radians(180.0), 4, 'X')
+
+    return bl_light, world_matrix
+
 def mi_directional_to_bl_light(mi_context, mi_emitter):
     bl_light = bpy.data.lights.new(name=mi_emitter.id(), type='SUN')
 
@@ -103,6 +125,7 @@ def mi_directional_to_bl_light(mi_context, mi_emitter):
 
 _emitter_converters = {
     'point': mi_point_to_bl_light,
+    'spot': mi_spot_to_bl_light,
     'directional': mi_directional_to_bl_light,
 }
 

@@ -18,8 +18,6 @@ from . import mi_spectra_utils
 from . import mi_props_utils
 from . import textures
 
-from ipdb import set_trace
-
 #################
 ##  Utilities  ##
 #################
@@ -256,7 +254,6 @@ def write_mi_rgb_property(mi_context, mi_mat, mi_prop_name, bl_mat_wrap, out_soc
             write_mi_rgb_texture(mi_context, mi_texture, bl_mat_wrap, out_socket_id, default)
         elif mi_prop_type == Properties.Type.Object:
             print(mi_prop_name)
-            # set_trace()
             mi_obj = mi_mat.get(mi_prop_name)
             
             write_mi_rgb_spectrum(mi_context, mi_obj, bl_mat_wrap, out_socket_id, default)
@@ -271,12 +268,14 @@ def write_mi_rgb_property(mi_context, mi_mat, mi_prop_name, bl_mat_wrap, out_soc
 ##  IOR property writers  ##
 ############################
 
+# also account for ext_ior
 def write_mi_ior_property(mi_context, mi_mat, mi_prop_name, bl_mat_wrap, out_socket_id, default=None):
     from mitsuba import Properties
     if mi_mat.has_property(mi_prop_name):
         mi_prop_type = mi_mat.type(mi_prop_name)
         if mi_prop_type == Properties.Type.Float:
-            bl_mat_wrap.out_node.inputs[out_socket_id].default_value = mi_mat.get(mi_prop_name, default)
+            # assumpion ext_ior is a float
+            bl_mat_wrap.out_node.inputs[out_socket_id].default_value = mi_mat.get(mi_prop_name, default)/mi_mat.get("ext_ior", default)
         elif mi_prop_type == Properties.Type.String:
             bl_mat_wrap.out_node.inputs[out_socket_id].default_value = mi_ior_string_to_float(mi_context, mi_mat.get(mi_prop_name, 'bk7'))
         else:

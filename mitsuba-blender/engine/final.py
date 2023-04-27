@@ -4,7 +4,6 @@ import os
 import numpy as np
 from ..io.exporter import SceneConverter
 
-
 class MitsubaRenderEngine(bpy.types.RenderEngine):
 
     bl_idname = "MITSUBA"
@@ -41,8 +40,8 @@ class MitsubaRenderEngine(bpy.types.RenderEngine):
             self.size_y = int(b_scene.render.resolution_y * scale)
 
             # Temporary workaround as long as the dict creation writes stuff to dict
-            with tempfile.TemporaryDirectory() as dummy_dir:
             # dummy_dir = "/home/arpit/Downloads/blender_tmp_dir/"
+            with tempfile.TemporaryDirectory() as dummy_dir:
                 filepath = os.path.join(dummy_dir, "scene.xml")
                 self.converter.set_path(filepath)
                 self.converter.scene_to_dict(depsgraph)
@@ -51,6 +50,8 @@ class MitsubaRenderEngine(bpy.types.RenderEngine):
                 curr_thread.file_resolver().prepend(dummy_dir)
                 mts_scene = self.converter.dict_to_scene()
 
+            print("Scene dumped")
+            
             sensor = mts_scene.sensors()[0]
             mts_scene.integrator().render(mts_scene, sensor)
             render_results = sensor.film().bitmap().split()
@@ -58,7 +59,7 @@ class MitsubaRenderEngine(bpy.types.RenderEngine):
             # bmp.write(os.path.join(dummy_dir, "myimg.exr"))
 
             for result in render_results:
-                buf_name = result[0].replace("<root>", "Main")
+                buf_name = result[0].replace("<root>", "Combined")
                 channel_count = result[1].channel_count() if result[1].channel_count() != 2 else 3
 
                 # extract name
@@ -78,7 +79,11 @@ class MitsubaRenderEngine(bpy.types.RenderEngine):
                     render_pixels = np.dstack((render_pixels, np.zeros((*render_pixels.shape[:2], 1))))
                 #render_pixels = np.array(render.convert(Bitmap.PixelFormat.RGBA, Struct.Type.Float32, srgb_gamma=False))
                 # Here we write the pixel values to the RenderResult
-                buf_name = result[0].replace("<root>", "Main")
+                buf_name = result[0].replace("<root>", "Combined")
                 layer = blender_result.layers[0].passes[buf_name]
+                # combined has alpha channel as well
+                if result[1].channel_count() == 3:
+                    # Add a dummy fourth channel
+                    render_pixels = np.dstack((render_pixels, np.zeros((*render_pixels.shape[:2], 1))))
                 layer.rect = np.flip(render_pixels, 0).reshape((self.size_x*self.size_y, -1))
             self.end_result(blender_result)
