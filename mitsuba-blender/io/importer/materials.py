@@ -275,7 +275,7 @@ def write_mi_ior_property(mi_context, mi_mat, mi_prop_name, bl_mat_wrap, out_soc
         mi_prop_type = mi_mat.type(mi_prop_name)
         if mi_prop_type == Properties.Type.Float:
             # assumpion ext_ior is a float
-            bl_mat_wrap.out_node.inputs[out_socket_id].default_value = mi_mat.get(mi_prop_name, default)/mi_mat.get("ext_ior", default)
+            bl_mat_wrap.out_node.inputs[out_socket_id].default_value = mi_mat.get(mi_prop_name, default)/mi_mat.get("ext_ior", 1.0)
         elif mi_prop_type == Properties.Type.String:
             bl_mat_wrap.out_node.inputs[out_socket_id].default_value = mi_ior_string_to_float(mi_context, mi_mat.get(mi_prop_name, 'bk7'))
         else:
