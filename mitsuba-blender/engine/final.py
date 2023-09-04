@@ -9,7 +9,9 @@ class MitsubaRenderEngine(bpy.types.RenderEngine):
     bl_idname = "MITSUBA"
     bl_label = "Mitsuba"
     bl_use_preview = False
-
+    # Use Eevee nodes in look dev ("MATERIAL") shading mode in the viewport.
+    bl_use_eevee_viewport = True
+    
     # Init is called whenever a new render engine instance is created. Multiple
     # instances may exist at the same time, for example for a viewport and final
     # render.
@@ -84,6 +86,6 @@ class MitsubaRenderEngine(bpy.types.RenderEngine):
                 # combined has alpha channel as well
                 if result[1].channel_count() == 3:
                     # Add a dummy fourth channel
-                    render_pixels = np.dstack((render_pixels, np.zeros((*render_pixels.shape[:2], 1))))
+                    render_pixels = np.dstack((render_pixels, np.ones((*render_pixels.shape[:2], 1))))
                 layer.rect = np.flip(render_pixels, 0).reshape((self.size_x*self.size_y, -1))
             self.end_result(blender_result)
