@@ -27,6 +27,8 @@ def get_addon_preferences(context):
     return context.preferences.addons[__name__].preferences
 
 def init_mitsuba(context):
+    # add user pip package path
+    sys.path.insert(0, site.getusersitepackages())
     # Make sure we can load mitsuba from blender
     try:
         should_reload_mitsuba = 'mitsuba' in sys.modules
@@ -49,13 +51,6 @@ def init_mitsuba(context):
         return True
     except ModuleNotFoundError:
         return False
-    
-def init_pip_pkgs(context):
-    try:
-        import inflection
-        return True
-    except ModuleNotFoundError:
-        return False
 
 def try_register_mitsuba(context):
     prefs = get_addon_preferences(context)
@@ -64,10 +59,6 @@ def try_register_mitsuba(context):
     could_init_mitsuba = False
     if prefs.using_mitsuba_custom_path:
         update_additional_custom_paths(prefs, context)
-        # add local pip package folder
-        local_folder = os.path.expanduser(os.path.join("~", ".local", "lib", "python3.10", "site-packages"))
-        # print(local_folder)
-        sys.path.insert(0, local_folder)
         # ---
         could_init_mitsuba = init_mitsuba(context)
         prefs.has_valid_mitsuba_custom_path = could_init_mitsuba
@@ -77,24 +68,14 @@ def try_register_mitsuba(context):
         else:
             prefs.mitsuba_dependencies_status_message = 'Failed to load custom Mitsuba. Please verify the path to the build directory.'
     elif prefs.has_pip_package:
+        # add local pip package folder
+        sys.path.insert(0, site.getusersitepackages())
         could_init_mitsuba = init_mitsuba(context)
         if could_init_mitsuba:
             import mitsuba
             prefs.mitsuba_dependencies_status_message = f'Found pip Mitsuba v{mitsuba.__version__}.'
         else:
             prefs.mitsuba_dependencies_status_message = 'Failed to load Mitsuba package.'
-
-        # pip may install in local folder
-        # add local pip package folder
-        sys.path.insert(0, site.getusersitepackages())
-        # ---
-
-        could_find_pkgs = init_pip_pkgs(context)
-        if could_find_pkgs:
-            prefs.mitsuba_dependencies_status_message = f'Found pip inflection.'
-        else:
-            prefs.mitsuba_dependencies_status_message = 'Failed to load inflection package.'
-
     else:
         prefs.mitsuba_dependencies_status_message = 'Mitsuba dependencies not installed.'
 
@@ -131,9 +112,7 @@ def ensure_pip():
 def check_pip_dependencies(context):
     prefs = get_addon_preferences(context)
     result = subprocess.run([sys.executable, '-m', 'pip', 'show', 'mitsuba'], capture_output=True)
-    result1 = subprocess.run([sys.executable, '-m', 'pip', 'show', 'inflection'], capture_output=True)
-    
-    prefs.has_pip_package = (result.returncode == 0) and (result1.returncode == 0)
+    prefs.has_pip_package = (result.returncode == 0) 
 
 def clean_additional_custom_paths(self, context):
     # Remove old values from system PATH and sys.path
@@ -177,16 +156,6 @@ class MITSUBA_OT_install_pip_dependencies(Operator):
         if result.returncode != 0:
             self.report({'ERROR'}, f'Failed to install Mitsuba with return code {result.returncode}.')
             return {'CANCELLED'} 
-        
-        result = subprocess.run([sys.executable, '-m', 'pip', 'install', 'inflection'], capture_output=True)
-        if result.returncode != 0:
-            self.report({'ERROR'}, f'Failed to install inflection with return code {result.returncode}.')
-            return {'CANCELLED'} 
-
-        # result = subprocess.run([sys.executable, '-m', 'pip', 'install', 'glob'], capture_output=True)
-        # if result.returncode != 0:
-        #     self.report({'ERROR'}, f'Failed to install glob with return code {result.returncode}.')
-        #     return {'CANCELLED'} 
 
         prefs = get_addon_preferences(context)
         prefs.has_pip_package = True

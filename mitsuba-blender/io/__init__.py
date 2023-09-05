@@ -150,14 +150,14 @@ class ExportMitsuba(bpy.types.Operator, ExportHelper):
         self.report({'INFO'}, "Scene exported successfully!")
 
         # downgrade
-        # if self.downgrade:
-        #     print("- -- - ", self.filepath)
-        #     folder = osp.dirname(self.filepath)
-        #     fns = glob(osp.join(folder, "*/*.xml"), recursive=True) +\
-        #                 glob(osp.join(folder, "*.xml"), recursive=True)
-        #     for fname in fns:
-        #         print(f"Checking {fname}")
-        #         exporter.convert(fname)
+        if self.downgrade:
+            print("- -- - ", self.filepath)
+            folder = osp.dirname(self.filepath)
+            fns = glob(osp.join(folder, "*/*.xml"), recursive=True) +\
+                        glob(osp.join(folder, "*.xml"), recursive=True)
+            for fname in fns:
+                print(f"Checking {fname}")
+                exporter.convert(fname)
 
         #reset the exporter
         self.reset()
