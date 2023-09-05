@@ -1,9 +1,9 @@
 from os import path as osp
 import re
 import xml.etree.ElementTree as ET
-from inflection import camelize, underscore
 
 def convert(fname, mode="v1"):
+  from inflection import camelize, underscore
 
   dname = osp.dirname(fname)
   base = osp.basename(fname)

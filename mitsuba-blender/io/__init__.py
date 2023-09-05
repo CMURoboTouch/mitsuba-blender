@@ -20,7 +20,6 @@ from bpy_extras.io_utils import (
     )
 
 from os import path as osp
-from glob import glob
 from . import bl_utils
 from . import importer
 from . import exporter
@@ -109,7 +108,7 @@ class ExportMitsuba(bpy.types.Operator, ExportHelper):
     downgrade: BoolProperty(
             name = "Downgrade",
             description="Downgrade to 0.6v",
-            default = True,
+            default = False,
         )
 
     def __init__(self):
@@ -119,6 +118,7 @@ class ExportMitsuba(bpy.types.Operator, ExportHelper):
         self.converter = exporter.SceneConverter()
 
     def execute(self, context):
+        from glob import glob
         # Conversion matrix to shift the "Up" Vector. This can be useful when exporting single objects to an existing mitsuba scene.
         axis_mat = axis_conversion(
 	            to_forward=self.axis_forward,
@@ -150,14 +150,14 @@ class ExportMitsuba(bpy.types.Operator, ExportHelper):
         self.report({'INFO'}, "Scene exported successfully!")
 
         # downgrade
-        if self.downgrade:
-            print("- -- - ", self.filepath)
-            folder = osp.dirname(self.filepath)
-            fns = glob(osp.join(folder, "*/*.xml"), recursive=True) +\
-                        glob(osp.join(folder, "*.xml"), recursive=True)
-            for fname in fns:
-                print(f"Checking {fname}")
-                exporter.convert(fname)
+        # if self.downgrade:
+        #     print("- -- - ", self.filepath)
+        #     folder = osp.dirname(self.filepath)
+        #     fns = glob(osp.join(folder, "*/*.xml"), recursive=True) +\
+        #                 glob(osp.join(folder, "*.xml"), recursive=True)
+        #     for fname in fns:
+        #         print(f"Checking {fname}")
+        #         exporter.convert(fname)
 
         #reset the exporter
         self.reset()
