@@ -2,7 +2,7 @@
 
 # Mitsuba Blender Add-on
 
-[![Test suite](https://github.com/mitsuba-renderer/mitsuba-blender/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/mitsuba-renderer/mitsuba-blender/actions/workflows/test.yml)
+[![Nightly Release](https://github.com/mitsuba-renderer/mitsuba-blender/actions/workflows/nightly_release.yml/badge.svg)](https://github.com/mitsuba-renderer/mitsuba-blender/actions/workflows/nightly_release.yml)
 
 This add-on integrates the Mitsuba renderer into Blender.
 
@@ -24,6 +24,8 @@ More in-depth information about the features of the add-on are available on the 
 
 You can refer to the [Installation & Update Guide](https://github.com/mitsuba-renderer/mitsuba-blender/wiki/Installation-&-Update-Guide) on the wiki for more detailed instructions.
 
-### Requirements
+### Supported versions
 
-* `Blender >= 2.93`
+Blender version should be at least `2.93`. The addon has been extensively tested
+on LTS versions of blender (`2.93`, `3.3`). We recommend using those whenever
+possible.
