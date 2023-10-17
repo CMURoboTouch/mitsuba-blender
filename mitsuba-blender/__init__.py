@@ -205,6 +205,9 @@ def update_installed_dependencies_version(self, context):
 def update_mitsuba_custom_version(self, context):
     self.has_valid_mitsuba_custom_version = self.mitsuba_custom_version == DEPS_MITSUBA_VERSION
 
+def update_libllvm_path(self, context):
+    os.environ["DRJIT_LIBLLVM_PATH"] = self.libllvm_path
+
 class MitsubaPreferences(AddonPreferences):
     bl_idname = __name__
 
@@ -270,6 +273,13 @@ class MitsubaPreferences(AddonPreferences):
         name = 'Addition to sys.path',
         default = '',
         subtype = 'DIR_PATH',
+    )
+
+    libllvm_path: StringProperty(
+        name = 'libLLVM path',
+        default = '',
+        subtype = 'FILE_PATH',
+        update = update_libllvm_path,
     )
 
     def draw(self, context):

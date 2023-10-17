@@ -91,6 +91,7 @@ def convert_mesh(export_ctx, b_mesh, matrix_world, name, mat_nr):
         props['mat_indices'] = 0
 
     # Return the mitsuba mesh
+    # print(os.environ["DRJIT_LIBLLVM_PATH"])
     return load_dict(props)
 
 

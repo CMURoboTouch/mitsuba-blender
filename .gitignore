@@ -4,3 +4,4 @@ __pycache__*
 tests/**/out
 .pytest_cache
 .coverage
+.DS_Store

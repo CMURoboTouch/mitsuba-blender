@@ -24,7 +24,7 @@ from . import bl_utils
 from . import importer
 from . import exporter
 
-@orientation_helper(axis_forward='-Z', axis_up='Y')
+@orientation_helper(axis_forward='Y', axis_up='Z')
 class ImportMistuba(bpy.types.Operator, ImportHelper):
     """Import a Mitsuba scene"""
     bl_idname = "import_scene.mitsuba"
@@ -72,7 +72,7 @@ class ImportMistuba(bpy.types.Operator, ImportHelper):
         return {'FINISHED'}
 
 
-@orientation_helper(axis_forward='-Z', axis_up='Y')
+@orientation_helper(axis_forward='Y', axis_up='Z')
 class ExportMitsuba(bpy.types.Operator, ExportHelper):
     """Export as a Mitsuba scene"""
     bl_idname = "export_scene.mitsuba"

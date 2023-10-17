@@ -1,6 +1,8 @@
 from mathutils import Matrix
 import numpy as np
-from .export_context import Files
+from os.path import basename, join
+from shutil import copy2
+import bpy
 
 def convert_area_light(b_light, export_ctx):
     params = {}
@@ -57,14 +59,54 @@ def convert_area_light(b_light, export_ctx):
     params['bsdf'] = bsdf
     return params
 
-def convert_point_light(b_light, export_ctx):
+def convert_ies_light(b_light, export_ctx):
+    print("convert_ies_light")
     params = {
         'type': 'point'
     }
+    # get the filename
+    try:
+        b_light_node = b_light.data.node_tree.nodes.get('Light Output')
+        socket = b_light_node.inputs["Surface"]
+        ies_node = socket.links[0].from_node
+        if ies_node.bl_idname == 'ShaderNodeTexIES':
+            if ies_node.mode == "EXTERNAL":
+                old_fn = bpy.path.abspath(ies_node.filepath)
+                print(old_fn)
+                base = basename(old_fn)
+                params['filename'] = base
+                target_fn = join(export_ctx.directory, base)
+                # copy the file
+                copy2(old_fn, target_fn)
+            else: 
+                raise FileNotFoundError("IES file not found")
+        else: 
+            raise FileNotFoundError("IES file not found")
+
+    except Exception as e:
+        print("Couldn't export IES light")
+        print(e)
+        print("------------------")
+
+    #apply coordinate change to location
+    init_mat = Matrix.Rotation(np.pi, 4, 'X')
+    params['to_world'] = export_ctx.transform_matrix(b_light.matrix_world @ init_mat)
+    return params
+
+def convert_point_light(b_light, export_ctx):
+    # check if the light is using nodes
+    if b_light.data.use_nodes:      
+        params = convert_ies_light(b_light, export_ctx)
+    else:
+        params = {
+            'type': 'point'
+        }
+        #apply coordinate change to location
+        params['position'] = list(export_ctx.axis_mat @ b_light.location)
+    
     if b_light.data.shadow_soft_size:
         export_ctx.log("Light '%s' has a non-zero soft shadow radius. It will be ignored." % b_light.name_full, 'WARN')
-    #apply coordinate change to location
-    params['position'] = list(export_ctx.axis_mat @ b_light.location)
+    
     energy = b_light.data.energy / (4*np.pi) #normalize by the solid angle of a sphere
     intensity = energy * b_light.data.color
     params['intensity'] = export_ctx.spectrum(intensity)

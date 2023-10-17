@@ -22,6 +22,7 @@ from . import lights
 from . import camera
 from .downgrade import convert
 
+
 class SceneConverter:
     '''
     Converts a blender scene to a Mitsuba-compatible dict.
@@ -45,6 +46,16 @@ class SceneConverter:
         self.export_ctx.directory, _ = os.path.split(name)
 
     def scene_to_dict(self, depsgraph, window_manager=None):
+        # register custom plugins
+        # set llvm lib path
+        # import os
+        # os.environ["DRJIT_LIBLLVM_PATH"] = "/opt/homebrew/opt/llvm@16/lib/libLLVM.dylib"
+        # import mitsuba as mi
+        # mi.set_variant("llvm_ad_rgb")
+        # from ..custom_emitters.ies import IES
+        # mi.register_emitter("ies", IES)
+        # ----
+
         # Switch to object mode before exporting stuff, so everything is defined properly
         if bpy.ops.object.mode_set.poll():
             bpy.ops.object.mode_set(mode='OBJECT')
