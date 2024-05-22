@@ -4,6 +4,8 @@ from mathutils import Matrix
 import os
 import bpy
 
+# from ipdb import set_trace
+
 def convert_mesh(export_ctx, b_mesh, matrix_world, name, mat_nr):
     '''
     This method creates a mitsuba mesh from a blender mesh and returns it.
@@ -25,7 +27,7 @@ def convert_mesh(export_ctx, b_mesh, matrix_world, name, mat_nr):
         'type': 'blender',
         'version': ".".join(map(str,bpy.app.version))
     }
-    b_mesh.calc_normals()
+    # b_mesh.calc_normals()
     # Compute the triangle tesselation
     b_mesh.calc_loop_triangles()
 
@@ -92,6 +94,8 @@ def convert_mesh(export_ctx, b_mesh, matrix_world, name, mat_nr):
 
     # Return the mitsuba mesh
     # print(os.environ["DRJIT_LIBLLVM_PATH"])
+    # print(props)
+    # set_trace()
     return load_dict(props)
 
 

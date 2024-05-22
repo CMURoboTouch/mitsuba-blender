@@ -122,4 +122,5 @@ class SceneConverter:
 
     def dict_to_scene(self):
         from mitsuba import load_dict
+        print(self.export_ctx.scene_data)
         return load_dict(self.export_ctx.scene_data)

@@ -21,9 +21,18 @@ import sys
 import subprocess
 import site
 
+import importlib
+
+# this logic is important to reload the modules
+if "io" in locals():    
+    importlib.reload(io)
+if "engine" in locals():    
+    importlib.reload(engine)
+# ---
+
 from . import io, engine
 
-DEPS_MITSUBA_VERSION = '3.4.0'
+DEPS_MITSUBA_VERSION = '3.5.0'
 
 def get_addon_preferences(context):
     return context.preferences.addons[__name__].preferences
@@ -302,6 +311,7 @@ class MitsubaPreferences(AddonPreferences):
 
         box = layout.box()
         box.label(text='Advanced Settings')
+        box.prop(self, "libllvm_path", text="Set libLLVM path")
         box.prop(self, 'using_mitsuba_custom_path', text=f'Use custom Mitsuba path (Supported version is v{DEPS_MITSUBA_VERSION})')
         if self.using_mitsuba_custom_path:
             box.prop(self, 'mitsuba_custom_path')
@@ -318,6 +328,9 @@ def register():
     context = bpy.context
     prefs = get_addon_preferences(context)
     prefs.require_restart = False
+
+    if prefs.libllvm_path != '':
+        update_libllvm_path(prefs, context)
 
     if not ensure_pip():
         raise RuntimeError('Cannot activate mitsuba-blender add-on. Python pip module cannot be initialized.')

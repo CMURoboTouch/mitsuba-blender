@@ -111,5 +111,31 @@
         "label": "Depth Integrator",
         "description": "Returns the per-pixel distances to the intersected objects.",
         "parameters": {}
+    },
+    "ptracer" : {
+        "label" : "Particle Tracer Integrator",
+        "description" : "Particle tracing. Start rays from the light source",
+        "parameters" : {
+            "max_depth" : {
+                "label" : "Max. Depth",
+                "description" : "Longest path depth.",
+                "type"  : "integer",
+                "default" : -1,
+                "min" : -1
+            },
+            "rr_depth" : {
+                "label" : "Russian Roulette Depth",
+                "description" : "Minimum path depth at which russian roulette is used.",
+                "type"  : "integer",
+                "default" : 5,
+                "min" : 0
+            },
+            "hide_emitters" : {
+                "label" : "Hide Emitters",
+                "description" : "Hide directly visible emitters.",
+                "type" : "boolean",
+                "default" : false
+            }
+        }
     }
 }

@@ -25,6 +25,9 @@ def register():
     for panel in get_panels():
         panel.COMPAT_ENGINES.add('MITSUBA')
 
+    bpy.types.MATERIAL_PT_preview.COMPAT_ENGINES.add('MITSUBA')
+
+
 def unregister():
     from . import properties
     properties.unregister()
@@ -32,3 +35,5 @@ def unregister():
     for panel in get_panels():
         if 'MITSUBA' in panel.COMPAT_ENGINES:
             panel.COMPAT_ENGINES.remove('MITSUBA')
+
+    bpy.types.MATERIAL_PT_preview.COMPAT_ENGINES.remove('MITSUBA')
