@@ -43,13 +43,7 @@ def convert_area_light(b_light, export_ctx):
         raise NotImplementedError("Light shape: %s is not supported." % b_light.data.shape)
 
     #object transform
-    # account for parent
-    parent_trafo = Matrix.Identity(4)
-    parent = b_light.parent
-    if parent:
-        parent_trafo = parent.matrix_world
-
-    params['to_world'] = export_ctx.transform_matrix(parent_trafo @ b_light.matrix_world @ scale_mat)
+    params['to_world'] = export_ctx.transform_matrix(b_light.matrix_world @ scale_mat)
     emitter = {
         'type': 'area'
     }
@@ -95,13 +89,8 @@ def convert_ies_light(b_light, export_ctx):
         print("------------------")
 
     #apply coordinate change to location
-    parent_trafo = Matrix.Identity(4)
-    parent = b_light.parent
-    if parent:
-        parent_trafo = parent.matrix_world
-
     init_mat = Matrix.Rotation(np.pi, 4, 'X')
-    params['to_world'] = export_ctx.transform_matrix(parent_trafo @ b_light.matrix_world @ init_mat)
+    params['to_world'] = export_ctx.transform_matrix(b_light.matrix_world @ init_mat)
     return params
 
 def convert_point_light(b_light, export_ctx):
@@ -109,15 +98,13 @@ def convert_point_light(b_light, export_ctx):
     if b_light.data.use_nodes:      
         params = convert_ies_light(b_light, export_ctx)
     else:
-        parent_trafo = Matrix.Identity(4)
-        parent = b_light.parent
-        if parent:
-            parent_trafo = parent.matrix_world
         params = {
             'type': 'point'
         }
         #apply coordinate change to location
-        params['position'] = list(export_ctx.axis_mat @ parent_trafo @ b_light.location)
+        # account for parenting
+        location = b_light.matrix_world.translation
+        params['position'] = list(export_ctx.axis_mat @ location)
     
     if b_light.data.shadow_soft_size:
         export_ctx.log("Light '%s' has a non-zero soft shadow radius. It will be ignored." % b_light.name_full, 'WARN')
@@ -153,12 +140,7 @@ def convert_spot_light(b_light, export_ctx):
     params['beam_width'] = np.degrees(np.arccos(b + (1.0-b) * np.cos(alpha)))
     init_mat = Matrix.Rotation(np.pi, 4, 'X')
     #change default position, apply transform and change coordinates
-    parent_trafo = Matrix.Identity(4)
-    parent = b_light.parent
-    if parent:
-        parent_trafo = parent.matrix_world
-
-    params['to_world'] = export_ctx.transform_matrix(parent_trafo @ b_light.matrix_world @ init_mat)
+    params['to_world'] = export_ctx.transform_matrix(b_light.matrix_world @ init_mat)
     #TODO: look_at
     return params
 
