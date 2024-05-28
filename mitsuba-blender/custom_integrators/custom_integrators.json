@@ -1,8 +1,4 @@
 {
-  "mydirect" : {
-        "label" : "My Direct Illumination Integrator",
-        "description" : "Direct illumination integrator with multi-importance sampling."
-  },
   "pssmlt" : {
         "label" : "Primary Sample Space MLT",
         "description" : "Primary Sample Space Metropolis Light Transport",
@@ -26,6 +22,47 @@
                 "type"  : "integer",
                 "default" : 5,
                 "min" : 0
+            }
+        }
+    },
+    "sppm": {
+        "label": "Stochastic Progressive Photon Mapping",
+        "description": "Stochastic Progressive Photon Mapping",
+        "parameters": {
+            "max_depth": {
+                "label": "Max. Depth",
+                "description": "Longest path depth.",
+                "type": "integer",
+                "default": -1,
+                "min": -1
+            },
+            "photon_count": {
+                "label": "Photon Count",
+                "description": "Number of photons to emit.",
+                "type": "integer",
+                "default": 250000,
+                "min": 0
+            },
+            "initial_radius": {
+                "label": "Initial Radius",
+                "description": "Initial photon lookup radius.",
+                "type": "float",
+                "default": 0,
+                "min": 0
+            },
+            "alpha": {
+                "label": "Alpha",
+                "description": "Alpha parameter.",
+                "type": "float",
+                "default": 0.67,
+                "min": 0.01
+            },
+            "rr_depth": {
+                "label": "Russian Roulette Depth",
+                "description": "Minimum path depth at which russian roulette is used.",
+                "type": "integer",
+                "default": 5,
+                "min": 0
             }
         }
     }
